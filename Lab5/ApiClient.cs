@@ -16,15 +16,15 @@ internal class ApiClient
         try
         {
             var translation = await _client.TranslateTextAsync(text, sourceLang, targetLang);
-            return new ApiResponse<string>("Переклад успішний", translation.Text, System.Net.HttpStatusCode.OK);
+            return new ApiResponse<string>("The translation is successful.", translation.Text, System.Net.HttpStatusCode.OK);
         }
         catch (DeepLException ex)
         {
-            return new ApiResponse<string>($"Помилка DeepL: {ex.Message}", System.Net.HttpStatusCode.InternalServerError);
+            return new ApiResponse<string>($"DeepL error: {ex.Message}", System.Net.HttpStatusCode.InternalServerError);
         }
         catch (Exception ex)
         {
-            return new ApiResponse<string>($"Сталася помилка: {ex.Message}", System.Net.HttpStatusCode.InternalServerError);
+            return new ApiResponse<string>($"Error: {ex.Message}", System.Net.HttpStatusCode.InternalServerError);
         }
     }
 
