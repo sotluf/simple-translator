@@ -1,89 +1,50 @@
-﻿using System.Net;
-using System.Net.Http.Json;
-using System.Text.Json;
-using Lab5;
-using static Statics;
+﻿using System;
+using System.Threading.Tasks;
+using DeepL;
 
-internal class ApiClient(HttpClient httpClient)
+internal class ApiClient
 {
-    private readonly HttpClient _httpClient = httpClient;
+    private readonly DeepLClient _client;
 
+    public ApiClient(string authKey)
+    {
+        _client = new DeepLClient(authKey);
+    }
 
-    public async Task<ApiResponse<Language>> GetAsync(CancellationToken cancellationToken = default)
+    public async Task<ApiResponse<string>> TranslateAsync(string text, string sourceLang, string targetLang)
     {
         try
         {
-            var request = CreateRequest(HttpMethod.Get, "languages");
-            var response = await _httpClient.SendAsync(request, cancellationToken);
-            if (!response.IsSuccessStatusCode)
-            {
-                return new ApiResponse<Language>(response.ReasonPhrase ?? "An error occured.", response.StatusCode);
-            }
-
-            var json = (await response.Content.ReadFromJsonAsync<GetMethodContent>(
-                Statics.JsonSerializerOptions, cancellationToken
-            ))!;
-            return new ApiResponse<Language>("Request successful.", json.Languages, response.StatusCode);
+            var translation = await _client.TranslateTextAsync(text, sourceLang, targetLang);
+            return new ApiResponse<string>("Переклад успішний", translation.Text, System.Net.HttpStatusCode.OK);
         }
-        catch (Exception exception)
+        catch (DeepLException ex)
         {
-            return new ApiResponse<Language>(exception.Message, HttpStatusCode.InternalServerError);
+            return new ApiResponse<string>($"Помилка DeepL: {ex.Message}", System.Net.HttpStatusCode.InternalServerError);
+        }
+        catch (Exception ex)
+        {
+            return new ApiResponse<string>($"Сталася помилка: {ex.Message}", System.Net.HttpStatusCode.InternalServerError);
         }
     }
 
-
-    public async Task<ApiResponse<string>> PostAsync(
-        string text,
-        string sourceCountryCode,
-        string targetCountryCode,
-        CancellationToken cancellationToken = default
-    )
+    public class ApiResponse<T>
     {
-        try
+        public string Message { get; }
+        public T? Data { get; }
+        public System.Net.HttpStatusCode StatusCode { get; }
+
+        public ApiResponse(string message, T? data, System.Net.HttpStatusCode statusCode)
         {
-            var request = CreateRequest(
-                HttpMethod.Post,
-                $"translate?source={sourceCountryCode}&target={targetCountryCode}"
-            );
-            request.Content = new StringContent(text);
-            var response = await _httpClient.SendAsync(request, cancellationToken);
-            if (!response.IsSuccessStatusCode)
-            {
-                return new ApiResponse<string>(response.ReasonPhrase ?? "An error occured.", response.StatusCode);
-            }
-
-            var json = (await response.Content.ReadFromJsonAsync<PostMethodContent>(
-                Statics.JsonSerializerOptions, cancellationToken
-            ))!;
-            return new ApiResponse<string>(
-                "Request successful.",
-                [..json.Translations.Select(ti => ti.Translation)],
-                response.StatusCode
-            );
+            Message = message;
+            Data = data;
+            StatusCode = statusCode;
         }
-        catch (Exception exception)
+
+        public ApiResponse(string message, System.Net.HttpStatusCode statusCode)
         {
-            return new ApiResponse<string>(exception.Message, HttpStatusCode.InternalServerError);
+            Message = message;
+            StatusCode = statusCode;
         }
-    }
-}
-
-file static class Statics
-{
-    private const string ApiKey = "CEQRdhEP01NDjs8DDelT1F2gyIyEoHtz";
-    private static readonly Uri BaseUri = new("https://api.apilayer.com/language_translation/");
-
-
-    public static JsonSerializerOptions JsonSerializerOptions { get; } = new()
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower
-    };
-
-
-    public static HttpRequestMessage CreateRequest(HttpMethod method, string relativePath)
-    {
-        var message = new HttpRequestMessage(method, new Uri(BaseUri, relativePath));
-        message.Headers.Add("apikey", ApiKey);
-        return message;
     }
 }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\marya\\OneDrive\\Робочий стіл\\univer\\борг Розробка адаптивних web-інтерфейсів\\ЛР №3-9\\5\\Lab5\\Lab5.csproj": {}
+    "C:\\Users\\marya\\Source\\Repos\\simple-translator\\Lab5\\Lab5.csproj": {}
   },
   "projects": {
-    "C:\\Users\\marya\\OneDrive\\Робочий стіл\\univer\\борг Розробка адаптивних web-інтерфейсів\\ЛР №3-9\\5\\Lab5\\Lab5.csproj": {
+    "C:\\Users\\marya\\Source\\Repos\\simple-translator\\Lab5\\Lab5.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\marya\\OneDrive\\Робочий стіл\\univer\\борг Розробка адаптивних web-інтерфейсів\\ЛР №3-9\\5\\Lab5\\Lab5.csproj",
+        "projectUniqueName": "C:\\Users\\marya\\Source\\Repos\\simple-translator\\Lab5\\Lab5.csproj",
         "projectName": "Lab5",
-        "projectPath": "C:\\Users\\marya\\OneDrive\\Робочий стіл\\univer\\борг Розробка адаптивних web-інтерфейсів\\ЛР №3-9\\5\\Lab5\\Lab5.csproj",
+        "projectPath": "C:\\Users\\marya\\Source\\Repos\\simple-translator\\Lab5\\Lab5.csproj",
         "packagesPath": "C:\\Users\\marya\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\marya\\OneDrive\\Робочий стіл\\univer\\борг Розробка адаптивних web-інтерфейсів\\ЛР №3-9\\5\\Lab5\\obj\\",
+        "outputPath": "C:\\Users\\marya\\Source\\Repos\\simple-translator\\Lab5\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -42,13 +42,23 @@
         "restoreAuditProperties": {
           "enableAudit": "true",
           "auditLevel": "low",
-          "auditMode": "all"
+          "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.100"
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "DeepL.net": {
+              "target": "Package",
+              "version": "[1.15.0, )"
+            },
+            "GoogleTranslateFreeApi": {
+              "target": "Package",
+              "version": "[1.1.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
@@ -65,7 +75,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.100/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.306/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

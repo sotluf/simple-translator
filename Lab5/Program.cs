@@ -1,52 +1,41 @@
-﻿using System.Text;
+﻿using System;
+using System.Threading.Tasks;
 
-Console.InputEncoding = Console.OutputEncoding = Encoding.Unicode;
-
-using (var httpClient = new HttpClient())
+class Program
 {
-    var apiClient = new ApiClient(httpClient);
+    static async Task Main()
+    {
+        Console.OutputEncoding = System.Text.Encoding.UTF8;
+        Console.InputEncoding = System.Text.Encoding.UTF8;
 
-    var languagesResponse = await apiClient.GetAsync();
-    if (languagesResponse.Data is { } languages)
-    {
-        foreach (var language in languages)
-        {
-            Console.WriteLine($"{language.LanguageName} ({language.CountryCode})");
-        }
-    }
-    else
-    {
-        Console.WriteLine(
-            $"""
-             Помилка при отриманні списку мов, код: {languagesResponse.StatusCode}.
-             {languagesResponse.Message}
-             """
-        );
-        return;
-    }
+        Console.Write("Введіть свій DeepL API Key: ");
+        var apiKey = Console.ReadLine()?.Trim() ?? "";
 
-    Console.Write("Введіть код вхідної мови, наприклад, 'en': ");
-    var sourceCountryCode = Console.ReadLine() ?? "";
-    Console.Write("Введіть код вихідної мови, наприклад, 'ua': ");
-    var targetCountryCode = Console.ReadLine() ?? "";
-    Console.Write("Введіть текст: ");
-    var sourceText = Console.ReadLine() ?? "";
-    var translationResponse = await apiClient.PostAsync(sourceText, sourceCountryCode, targetCountryCode);
-    if (translationResponse.Data is { } targetTexts)
-    {
-        Console.WriteLine("Переклад:");
-        foreach (var targetText in targetTexts)
+        var apiClient = new ApiClient(apiKey);
+
+        Console.Write("Введіть код мови джерела (EN, DE, FR, UK…): ");
+        var sourceLang = Console.ReadLine()?.Trim() ?? "";
+
+        Console.Write("Введіть код мови перекладу (UK, EN, DE…): ");
+        var targetLang = Console.ReadLine()?.Trim() ?? "";
+
+        Console.Write("Введіть текст для перекладу: ");
+        var text = Console.ReadLine()?.Trim() ?? "";
+
+        var response = await apiClient.TranslateAsync(text, sourceLang, targetLang);
+
+        if (response.Data is { } translatedText)
         {
-            Console.WriteLine(targetText);
+            Console.WriteLine("\nПереклад:");
+            Console.WriteLine(translatedText);
         }
-    }
-    else
-    {
-        Console.WriteLine(
-            $"""
-             Помилка при перекладі: {translationResponse.StatusCode}.
-             {translationResponse.Message}
-             """
-        );
+        else
+        {
+            Console.WriteLine($"\nПомилка перекладу: {response.StatusCode}");
+            Console.WriteLine(response.Message);
+        }
+
+        Console.WriteLine("\nНатисніть будь-яку клавішу для виходу...");
+        Console.ReadKey();
     }
 }
