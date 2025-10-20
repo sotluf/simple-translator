@@ -18,27 +18,64 @@ class Program
 
         var apiClient = new ApiClient(apiKey);
 
-        Console.Write("Enter source language code (e.g., EN): ");
-        var sourceLang = Console.ReadLine()?.Trim() ?? "";
+        string sourceLang = "";
+        string targetLang = "";
+        bool firstRun = true;
 
-        Console.Write("Enter target language code (e.g., NL): ");
-        var targetLang = Console.ReadLine()?.Trim() ?? "";
-
-        Console.Write("Enter your text: ");
-        var text = Console.ReadLine()?.Trim() ?? "";
-
-        var response = await apiClient.TranslateAsync(text, sourceLang, targetLang);
-
-        if (response.Data is { } translatedText)
+        while (true)
         {
-            Console.WriteLine("\nResult:");
-            Console.WriteLine(translatedText);
-        }
-        else
-        {
-            Console.WriteLine($"\nTranslation error:: {response.StatusCode}");
-            Console.WriteLine(response.Message);
-        }
+            if (firstRun || string.IsNullOrWhiteSpace(sourceLang) || string.IsNullOrWhiteSpace(targetLang))
+            {
+                Console.Write("Enter source language code (e.g., EN): ");
+                sourceLang = Console.ReadLine()?.Trim() ?? "";
 
+                Console.Write("Enter target language code (e.g., NL): ");
+                targetLang = Console.ReadLine()?.Trim() ?? "";
+
+                firstRun = false;
+            }
+
+            Console.Write("Enter your text: ");
+            var text = Console.ReadLine()?.Trim() ?? "";
+
+            var response = await apiClient.TranslateAsync(text, sourceLang, targetLang);
+
+            if (response.Data is { } translatedText)
+            {
+                Console.WriteLine("\nResult:");
+                Console.WriteLine(translatedText);
+            }
+            else
+            {
+                Console.WriteLine($"\nTranslation error: {response.StatusCode}");
+                Console.WriteLine(response.Message);
+            }
+
+            Console.WriteLine("\nMenu:");
+            Console.WriteLine("1 - Translate another text with the same languages");
+            Console.WriteLine("2 - Choose different languages");
+            Console.WriteLine("0 - Exit");
+
+            Console.Write("Select an option: ");
+            var choice = Console.ReadLine()?.Trim() ?? "";
+
+            switch (choice)
+            {
+                case "1":
+                    break;
+                case "2":
+                    sourceLang = "";
+                    targetLang = "";
+                    break;
+                case "0":
+                    Console.WriteLine("Exiting program...");
+                    return;
+                default:
+                    Console.WriteLine("Invalid option. Exiting program...");
+                    return;
+            }
+
+            Console.WriteLine();
+        }
     }
 }
