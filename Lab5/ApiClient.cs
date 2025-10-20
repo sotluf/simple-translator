@@ -6,11 +6,13 @@ internal class ApiClient
 {
     private readonly DeepLClient _client;
 
+    // Initialize DeepL client with the provided key
     public ApiClient(string authKey)
     {
         _client = new DeepLClient(authKey);
     }
 
+    // Translate text from source to target language
     public async Task<ApiResponse<string>> TranslateAsync(string text, string sourceLang, string targetLang)
     {
         try
@@ -28,6 +30,7 @@ internal class ApiClient
         }
     }
 
+    // Generic API response class
     public class ApiResponse<T>
     {
         public string Message { get; }

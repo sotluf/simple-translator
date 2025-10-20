@@ -10,6 +10,7 @@ class Program
 
         var apiKey = Environment.GetEnvironmentVariable("DEEPL_API_KEY");
 
+        // Check if API key is provided
         if (string.IsNullOrWhiteSpace(apiKey))
         {
             Console.WriteLine("API Key not found! Please set the DEEPL_API_KEY environment variable.");
@@ -24,6 +25,7 @@ class Program
 
         while (true)
         {
+            // Ask for languages if it's the first run or user chose to change languages
             if (firstRun || string.IsNullOrWhiteSpace(sourceLang) || string.IsNullOrWhiteSpace(targetLang))
             {
                 Console.Write("Enter source language code (e.g., EN): ");
@@ -35,11 +37,14 @@ class Program
                 firstRun = false;
             }
 
+            // Ask for text to translate
             Console.Write("Enter your text: ");
             var text = Console.ReadLine()?.Trim() ?? "";
 
+            // Perform translation
             var response = await apiClient.TranslateAsync(text, sourceLang, targetLang);
 
+            // Display result or error
             if (response.Data is { } translatedText)
             {
                 Console.WriteLine("\nResult:");
@@ -51,6 +56,7 @@ class Program
                 Console.WriteLine(response.Message);
             }
 
+            // Menu options
             Console.WriteLine("\nMenu:");
             Console.WriteLine("1 - Translate another text with the same languages");
             Console.WriteLine("2 - Choose different languages");
@@ -61,16 +67,16 @@ class Program
 
             switch (choice)
             {
-                case "1":
+                case "1": // Continue with same languages
                     break;
-                case "2":
+                case "2": // Change languages
                     sourceLang = "";
                     targetLang = "";
                     break;
-                case "0":
+                case "0": // Exit
                     Console.WriteLine("Exiting program...");
                     return;
-                default:
+                default: // Invalid option
                     Console.WriteLine("Invalid option. Exiting program...");
                     return;
             }
